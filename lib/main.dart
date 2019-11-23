@@ -13,13 +13,12 @@ void main() {
   runApp(MaterialApp(
     title: 'Passing Data',
     home: TodosScreen(
-      todos: List.generate(
-        20,
-        (i) => Todo(
-              'youtube $i',
-              'https://www.youtube.com/$i',
-            ),
-      ),
+      todos: [
+          Todo(title: "no context"),
+          Todo(title: "text(isurl is null)",context: "hoge"),
+          Todo(title: "text(isUrl is false)",context: "hoge", isUrl: false),
+          Todo(title: "url", context: "https://www.youtube.com/watch?v=McaEBf-tAlk&list=RDMMMcaEBf-tAlk&start_radio=1", isUrl: true),
+        ]
     ),
   ));
 }
@@ -32,16 +31,14 @@ class TodosScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('WebviewTest'),
+        title: Text('webview'),
       ),
       body: ListView.builder(
         itemCount: todos.length,
         itemBuilder: (context, index) {
           return ListTile(
             title: Text(todos[index].title),
-            // When a user taps the ListTile, navigate to the DetailScreen.
-            // Notice that you're not only creating a DetailScreen, you're
-            // also passing the current todo through to it.
+            // 詳細画面に遷移する
             onTap: () {
               Navigator.push(
                 context,
@@ -58,11 +55,7 @@ class TodosScreen extends StatelessWidget {
 }
 
 class DetailScreen extends StatelessWidget {
-  // Declare a field that holds the Todo.
   final Todo todo;
-  WebViewController _controller;
-
-  // In the constructor, require a Todo.
   DetailScreen({Key key, @required this.todo}) : super(key: key);
 
   @override
@@ -72,13 +65,35 @@ class DetailScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(todo.title),
       ),
-      body: WebView(
-        initialUrl: todo.url,
-        javascriptMode: JavascriptMode.unrestricted,
-        onWebViewCreated: (WebViewController controller) {
-          _controller = controller;
+      body: _getBody(),
+      floatingActionButton: FloatingActionButton(
+      onPressed: () {
+          // Add your onPressed code here!
         },
+        child: Icon(Icons.favorite_border),
+        backgroundColor: Colors.blue,
       ),
     );
+  }
+
+  _getWebview() {
+    return WebView(
+            initialUrl: todo.context,
+            javascriptMode: JavascriptMode.unrestricted,
+            onWebViewCreated: (WebViewController controller) {
+            },
+          );
+  }
+
+  _getBody(){
+    if (todo.isUrl == null || todo.isUrl == false) {
+      if (todo.context == null){
+        return Text("");
+      } else{
+        return Text(todo.context);
+      }
+    } else {
+      return _getWebview();
+    }
   }
 }
