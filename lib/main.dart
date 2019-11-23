@@ -4,8 +4,9 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 class Todo {
   final String title;
-  final String url;
-  Todo(this.title, this.url);
+  final String context;
+  final bool isUrl;
+  Todo({this.title, this.context, this.isUrl});
 }
 
 void main() {
