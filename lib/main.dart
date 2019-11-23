@@ -1,10 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class Todo {
   final String title;
-  final String description;
-  Todo(this.title, this.description);
+  final String url;
+  Todo(this.title, this.url);
 }
 
 void main() {
@@ -15,7 +16,7 @@ void main() {
         20,
         (i) => Todo(
               'youtube $i',
-              'https://www.youtube.com/',
+              'https://www.youtube.com/$i',
             ),
       ),
     ),
@@ -30,7 +31,7 @@ class TodosScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Todos'),
+        title: Text('WebviewTest'),
       ),
       body: ListView.builder(
         itemCount: todos.length,
@@ -58,6 +59,7 @@ class TodosScreen extends StatelessWidget {
 class DetailScreen extends StatelessWidget {
   // Declare a field that holds the Todo.
   final Todo todo;
+  WebViewController _controller;
 
   // In the constructor, require a Todo.
   DetailScreen({Key key, @required this.todo}) : super(key: key);
@@ -69,9 +71,12 @@ class DetailScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(todo.title),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Text(todo.description),
+      body: WebView(
+        initialUrl: todo.url,
+        javascriptMode: JavascriptMode.unrestricted,
+        onWebViewCreated: (WebViewController controller) {
+          _controller = controller;
+        },
       ),
     );
   }
